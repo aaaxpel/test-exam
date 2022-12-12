@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/style.css">
+    <title>Подготовка к экзамену по Тестированию ИС</title>
+</head>
+
+<body>
+    <div class="container" id="26">
+        <h2>26. Пример работы с данными полученные со страницы</h2>
+        <a href="#error">Обработка ошибок</a>
+    </div>
+
+    <div class="container" id="27">
+        <h2>27. Пример получения данных из БД</h2>
+        <h3><strong>index.php</strong></h3>
+
+        <pre><code>...
+
+<span class="php">&lt;?php
+    require "lib/db.php";
+    $queryAll = "select * from `info`";
+
+    <em>// $queryAll - строка запроса</em>
+    $all = mysqli_query($db, $queryAll);
+
+    <em>// Данные получаем в виде неструктурированного массива, mysqli_fetch_all приводит $all к проиндексированному (структрурированному) массиву</em>
+    $all = mysqli_fetch_all($all);
+
+    foreach ($all as $item) {
+?&gt;</span>
+
+    &lt;tr&gt;
+        &lt;td&gt;
+        <em>&lt;!-- Чтобы передать значение из PHP в HTML --&gt;</em>
+        <em>&lt;!-- Аналог echo / print --&gt;</em>
+        <span class="php">&lt;?= $item[0] ?&gt;</span>
+        &lt;/td&gt;
+        &lt;td&gt;
+            <span class="php">&lt;?= $item[1] ?&gt;</span>
+        &lt;/td&gt;
+        &lt;td&gt;
+            <span class="php">&lt;?= $item[2] ?&gt;</span>
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;a href="about.php?id=<span class="php">&lt;?= $item[0] ?&gt;</span>"&gt;Подробнее&lt;/a&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;a href="redact.php?id=<span class="php">&lt;?= $item[0] ?&gt;</span>"&gt;Редактировать&lt;/a&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    <span class="php">&lt;?php
+        }
+    ?&gt;</span>
+&lt;/table&gt;</code></pre>
+    </div>
+
+    <div class="container" id="28">
+        <h2>28. Пример соединения с БД</h2>
+        <h3><strong>db.php</strong></h3>
+        <pre><code><span class="php">&lt;?php
+    $db = mysqli_connect(
+        '127.0.0.1:3306',
+        'root',
+        'pass',
+        'db'
+    );
+    
+    <em>// Обработка ошибок</em>
+    if (!$db) {
+        <em>// Убивает текущий процесс</em>
+        die("error connection");
+    }</span></code></pre>
+    </div>
+
+    <div class="container" id="29">
+        <h2>29. Пример обработки ошибок которые могут возникнуть при запросах</h2>
+    </div>
+
+    <div class="container" id="30">
+        <h2>30. Пример редактирования данных (реализация метода <strong>UPDATE</strong>)</h2>
+
+        <h3 id="redact"><strong>redact.php</strong></h3>
+        <pre><code>&lt;body&gt;
+    <span class="php">&lt;?php
+        require "lib/db.php";
+    
+        $id = $_GET['id'];
+        $queryOpenOne = "select * from `info` where `id` = $id";
+        <em>// mysqli_query возвращает объект класса mysqli_result. Мы не можем использовать его как массив.</em>
+        $one = mysqli_query($db, $queryOpenOne);
+        $one = mysqli_fetch_assoc($one);
+    ?&gt;</span>
+
+    &lt;form action="lib/update.php" method="POST"&gt;
+        &lt;input type="hidden" name="id" placeholder="id" value="<span class="php">&lt;?= htmlspecialchars($one['id']) ?&gt;</span>"&gt;
+        &lt;input type="text" name="info" placeholder="info" value="<span class="php">&lt;?= htmlspecialchars($one['info']) ?&gt;</span>"&gt;
+        &lt;input type="text" name="tooinfo" placeholder="tooinfo" value="<span class="php">&lt;?= htmlspecialchars($one['tooinfo']) ?&gt;</span>"&gt;
+        
+        &lt;button type="submit"&gt;Редактировать&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;</code></pre>
+
+        <h3><strong>update.php</strong></h3>
+        <pre><code><span class="php">&lt;?php
+    require 'db.php';
+    $id = $_POST['id'];
+    $info = $_POST['info'];
+    $tooinfo = $_POST['tooinfo'];
+    
+    $queryUpdate = "update `info` set `info` = '$info', `tooinfo` = '$tooinfo' where `id` = '$id'";
+    
+    $update = mysqli_query($db, $queryUpdate);
+    
+    <em id="error">Обработка ошибок</em>
+    if (!$update) {
+        die('update error');
+    } else {
+        header('Location: ../index.php');
+    }</span>
+</code></pre>
+    </div>
+
+    <div class="container" id="31">
+        <h2>31. Пример вывода информации по конкретному критерию</h2>
+        <h3><strong>index.php</strong></h3>
+        <pre><code><em>&lt;!-- Ссылка на about.php через кнопку --&gt;</em>
+&lt;button onClick="location.href='about.php?id=<span class="php">&lt;?= $item[0] ?&gt;</span>'"&gt;Подробнее&lt;/button&gt;
+
+<em>&lt;!-- Ссылка на about.php через ссылку --&gt;</em>
+&lt;a href="about.php?id=<span class="php">&lt;?= $item[0] ?&gt;</span>"&gt;Подробнее&lt;/a&gt;</code></pre>
+
+        <h3><strong>about.php</strong></h3>
+        <pre><code><span class="php">&lt;?php
+    require "lib/db.php";
+        
+    $id = $_GET['id'];
+    $queryOpenOne = "select * from `info` where `id` = $id";
+    $one = mysqli_query($db, $queryOpenOne);
+    $one = mysqli_fetch_assoc($one);
+?&gt;</span>
+
+&lt;body&gt;
+    <em>// Конструкция "&lt;?= ?&gt;" выводит какой-то текст (аналог echo)</em>
+    &lt;p&gt;Айди
+        <span class="php">&lt;?= htmlspecialchars($one['id']) ?&gt;</span>
+    &lt;/p&gt;
+    &lt;p&gt;Инфо
+        <span class="php">&lt;?= htmlspecialchars($one['info']) ?&gt;</span>
+    &lt;/p&gt;
+    &lt;p&gt;Тоже инфо
+        <span class="php">&lt;?= htmlspecialchars($one['tooinfo']) ?&gt;</span>
+    &lt;/p&gt;
+&lt;/body&gt;</code></pre>
+    </div>
+
+    <div class="container" id="32">
+        <h2>32. Пример удаления информации из записи в БД с помощью интерфейсов</h2>
+
+        <a href="#redact">Начало кода redact.php</a>
+
+        <h3><strong>redact.php</strong></h3>
+        <pre><code>&lt;form action="lib/delete.php" method="POST" class="delete"&gt;
+    &lt;input type="hidden" name="id" value="<span class="php">&lt;?= htmlspecialchars($one['id']) ?&gt;</span>"&gt;
+    &lt;input type="hidden" name="info" value="<span class="php">&lt;?= htmlspecialchars($one['info']) ?&gt;</span>"&gt;
+    &lt;input type="hidden" name="tooinfo" value="<span class="php">&lt;?= htmlspecialchars($one['tooinfo']) ?&gt;</span>"&gt;
+
+    &lt;button type="submit"&gt;Удалить&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <h3><strong>delete.php</strong></h3>
+        <pre><code><span class="php">&lt;?php
+    require 'db.php';
+    $id = $_POST['id'];
+        
+    $queryDelete = "delete from `info` where `id` = '$id'";
+        
+    $delete = mysqli_query($db, $queryDelete);
+        
+    if (!$delete) {
+        die('delete error');
+    } else {
+        header('Location: ../index.php');
+    }</span></code></pre>
+    </div>
+
+    <div class="container" id="33">
+        <h2>33. Пример добавления информации в БД с помощью интерфейсов и обработка ошибок которые могут возникнуть</h2>
+        <h3><strong>index.php</strong></h3>
+
+        <pre><code>&lt;form action="lib/add.php" method="POST"&gt;
+    &lt;input type="text" name="info" placeholder="info"&gt;
+    &lt;input type="text" name="tooinfo" placeholder="tooinfo"&gt;
+    &lt;input type="submit" value="Добавить"&gt;
+&lt;/form&gt;</code></pre>
+
+        <h3><strong>add.php</strong></h3>
+        <pre><code><span class="php">&lt;?php
+    <em>// Стягивание файлика</em>
+    require "db.php";
+
+    $info = $_POST["info"];
+    $tooinfo = $_POST["tooinfo"];
+
+    $queryAdd = "insert into `info` (`info`, `tooinfo`) values ('$info', '$tooinfo')";
+
+    $add = mysqli_query($db, $queryAdd);
+
+    <em>// Перенаправление</em>
+    header("Location: ../index.php");</span></code></pre>
+    </div>
+
+    <div class="container" id="34">
+        <h2>34. Пример удаления информации и обработка этого события на сервере и отловом ошибок</h2>
+        <h3><strong>lib/delete.php</strong></h3>
+        <p>В запросе допущена ошибка. Вместо
+            <code class="php">delete</code> я написал
+            <code class="error">aelete</code>
+            В итоге, на странице выводится ошибка.
+        </p>
+
+        <pre><code class="php">try {
+    $queryDelete = "<span class="error">aelete</span> from `info` where `id` = '$id'";
+            
+    $delete = mysqli_query($db, $queryDelete);
+} catch (Exception $err) {
+    echo '&lt;p&gt;' . $err . '&lt;/p&gt;';
+    echo '&lt;a href="./index.php"&gt;Перейти на главную&lt;/a&gt;';
+}</code></pre>
+
+        <h3><strong>Результат</strong></h3>
+        <pre
+            class="error">mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`id` = '11'' at line 1 in C:\OpenServer\domains\abc\lib\delete.php:13 Stack trace: #0 C:\OpenServer\domains\abc\lib\delete.php(13): mysqli_query(Object(mysqli), 'delete from `in...') #1 {main}</pre>
+    </div>
+
+    <div class="container" id="35">
+        <h2>35. Пример реализации регистрации с обработкой всех ошибок которые могут возникнуть (совпадение учетной
+            записи, несовпадение паролей при регистрации)</h2>
+
+        <h3><strong>login.php</strong></h3>
+
+        <pre><code>&lt;form action="lib/register.php" method="POST"&gt;
+    &lt;input type="email" name="email" placeholder="Введите почту"&gt;
+    &lt;input type="password" name="password" placeholder="Введите пароль"&gt;
+    &lt;input type="password" name="confirm_password" placeholder="Повторите пароль"&gt;
+    &lt;button type="submit"&gt;Зарегистрироваться&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <h3><strong>register.php</strong></h3>
+
+        <pre><code><span class="php">&lt;?php
+        require "db.php";
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
+        
+        <em>// Валидация паролей</em>
+        if ($password !== $confirm_password) {
+            echo 'Пароли не совпадают';
+        }
+        
+        <em>// Шифрование пароля</em>
+        $password = password_hash($password, PASSWORD_BCRYPT);
+        
+        <em>// Валидация почты</em>
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo 'Это не почта';
+        }
+        
+        <em>// Выделение пользователя с почтой, указанной пользователем</em>
+        $queryAllUsers = "select * from `users` where `email` = '$email'";
+        
+        $allUsers = mysqli_query($db, $queryAllUsers);
+        
+        $allUsers = mysqli_fetch_assoc($allUsers);
+        
+        <em>// Если почта не занята, добавляем пользователя в базу данных</em>
+        if (!$allUsers) {
+            <em>// Добавление пользователя в базу данных</em>
+            <em>// Роли: 1 - пользователь, 2 - админ</em>
+            $queryAddUser = "insert into `users` (`email`, `password`, `role`) values ('$email', '$password', 1)";
+            mysqli_query($db, $queryAddUser);
+        } else {
+            echo 'Почта занята';
+        }
+        
+        echo '&lt;a href="../index.php"&gt;Вернуться на главную</a>';</span></code></pre>
+    </div>
+
+    <div class="container" id="36">
+        <h2>36. Пример реализации авторизации с обработкой всех ошибок</h2>
+
+        <h3><strong>login.php</strong></h3>
+
+        <pre><code>&ltform action="lib/auth.php" method="POST"&gt;
+    &lt;input type="email" name="email" placeholder="Введите почту"&gt;
+    &lt;input type="password" name="password" placeholder="Введите пароль"&gt;
+    &lt;button type="submit"&gt;Войти&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <h3><strong>lib/auth.php</strong></h3>
+
+        <pre><code class="php">&lt;?php
+    require "db.php";
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+        
+    $queryAuth = "select * from `users` where `email` = '$email'";
+        
+    $auth = mysqli_query($db, $queryAuth);
+        
+    $auth = mysqli_fetch_all($auth);
+        
+    if (password_verify($password, $auth[0][2])) {
+        echo "&lt;h1&gt;Вы вошли в свой аккаунт!&lt;/h1&gt;";
+        session_start();
+        $_SESSION['isLoggedIn'] = true;
+        $_SESSION['user'] = [
+            'email' => $auth[0][1],
+            'pass' => $auth[0][2],
+            'role' => $auth[0][3]
+        ];
+    } else {
+        echo "&lt;p&gt;Неправильная почта или пароль&lt;/p&gt;";
+    }
+    echo '&lt;a href="../index.php"&gt;Вернуться на главную&lt;/a&gt;';</code></pre>
+    </div>
+
+</body>
+
+
+</html>
