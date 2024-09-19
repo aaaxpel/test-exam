@@ -1,9 +1,7 @@
-# Website created to prepare for the final exam
+# Website created to prepare to prepare for a small exam
 
-Discipline: "Design and development of user interfaces" (ПРИП - Проектирование и разработка интерфейсов пользователя)
+Discipline: "Information System Testing" (Тестирование ИС - Информационных Систем)
 
-The first 30 questions were made by me, the rest by classmates. Written entirely on vanilla HTML, CSS and JS.
+This only includes a couple of actually relevant questions and answers to them. Low effort website that I don't think should've existed.
 
-Features vertical scroll, navigation and progress bar on the left. On the right is the contents with sources wherever possible.
-
-https://prip-exam.netlify.app/
+Source for styles and overall a better project: https://github.com/aaaxpel/exam-prep
